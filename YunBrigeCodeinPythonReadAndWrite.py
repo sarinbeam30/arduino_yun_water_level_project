@@ -24,6 +24,7 @@ client = mqtt.Client("P1")
 MQTT_TOPIC_ID_OF_SENSOR = "#SENSOR"
 MQTT_MSG_LARDKABANG_ID_OF_SENSOR = "1"
 MQTT_MSG_BANGKAPI_ID_OF_SENSOR = "2"
+MQTT_MSG_LADPRAO_ID_OF_SENSOR = "3"
 
 MQTT_TOPIC_VALUE = "VALUE"
 MQTT_TOPIC_DATE_AND_TIME = "DATE_AND_TIME"
@@ -31,19 +32,22 @@ MQTT_TOPIC_DATE_AND_TIME = "DATE_AND_TIME"
 MQTT_TOPIC_LATITUDE = "LATITUDE"
 MQTT_MSG_LADKABANG_LATITUDE = "13.7299"
 MQTT_MSG_BANGKAPI_LATITUDE = "13.7628"
+MQTT_MSG_LADPRAO_LATITUDE = "13.8242"
 
 MQTT_TOPIC_LONGTITUDE = "LONGITUDE"
 MQTT_MSG_LARKRABANG_LONGTITUDE = "100.7783"
 MQTT_MSG_BANGKAPI_LONGTITUDE = "100.6456"
+MQTT_MSG_LADPRAO_LONGTITUDE = "100.6087"
 
 MQTT_TOPIC_LOCATION = "LOCATION"
-MQTT_MSG_LADKRABANG_LOCATION = "KMITL"
+MQTT_MSG_LADKRABANG_LOCATION = "LADKRABANG"
 MQTT_MSG_BANGKAPI_LOCATION = "BANGKAPI"
+MQTT_MSG_LADPRAO_LOCATION = "LADPRAO"
 
 
 ########### -------------- DICT SECTION ------------------ ****************
-node_1 = node_2 = {}
-node_1_dict = node_2_dict = {}
+node_1 = node_2 = node_3 = {}
+node_1_dict = node_2_dict  = node_3_dict= {}
 
 
 def ConnectToConsole():
@@ -97,7 +101,7 @@ def get_water_level():
   return str(response)[:-2]
 
 def generate_water_level():
-  return random.randint(1,100)
+  return str(random.randint(1,100))
 
 def create_Json_file_node_1():
   node_1 = {}
@@ -123,39 +127,48 @@ def create_Json_file_node_2():
   node_2_dict = json.dumps(node_2)
   return node_2_dict
 
+def create_Json_file_node_3():
+  node_3 = {}
+  node_3[MQTT_TOPIC_ID_OF_SENSOR] = MQTT_MSG_LADPRAO_ID_OF_SENSOR
+  node_3[MQTT_TOPIC_VALUE] = generate_water_level()
+  node_3[MQTT_TOPIC_DATE_AND_TIME] = setLocalTime()
+  node_3[MQTT_TOPIC_LATITUDE] = MQTT_MSG_LADPRAO_LATITUDE
+  node_3[MQTT_TOPIC_LONGTITUDE] = MQTT_MSG_LADPRAO_LONGTITUDE
+  node_3[MQTT_TOPIC_LOCATION] = MQTT_MSG_LADPRAO_LOCATION
+
+  node_3_dict = json.dumps(node_3)
+  return node_3_dict 
+
+
 
 def mqtt_publish_encoding(topic_name, value):
   mqtt_topic = "{}".format(topic_name)
   print(str(mqtt_topic) + " : " + str(value))
   time.sleep(2)
-  client.publish(topic=topic_name, payload=value, qos=1, retain=True)
+  client.publish(topic=topic_name, payload=value, qos=1, retain=False)
+
 
 def mqtt_publish():
   try:
     while True:
       print("\nPublishing....")
+      time.sleep(20)
+      mqtt_publish_encoding("BOARD_1", create_Json_file_node_1())
+      time.sleep(10)
+      mqtt_publish_encoding("BOARD_2", create_Json_file_node_2())
+      time.sleep(10)
+      mqtt_publish_encoding("BOARD_3", create_Json_file_node_3())
       time.sleep(5)
-      mqtt_publish_encoding("/BOARD_1", create_Json_file_node_1())
-      time.sleep(2)
-      mqtt_publish_encoding("/BOARD_2", create_Json_file_node_2())
-      time.sleep(1)
       print("Publish : Done\n")
-      time.sleep(3)
+      time.sleep(20)
   finally:
     client.disconnect()
     print("Disconnected from MQTT server.")
 
 def main():
-  
-  #MQTT_PART
   connect_to_mqtt_broker()
-
   while (1):
-    mqtt_publish()
-    # response = ReadResponse(s)
-    # client.publish("WATER_LEVEL_MQTT", str("LEVEL") + response)
-    # print("PUBLISH_LEAW_NA")
-    # time.sleep(1)   
+    mqtt_publish() 
  
 if __name__ == "__main__":
   main()
