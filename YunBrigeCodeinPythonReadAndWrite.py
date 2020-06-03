@@ -27,7 +27,8 @@ MQTT_MSG_BANGKAPI_ID_OF_SENSOR = "2"
 MQTT_MSG_LADPRAO_ID_OF_SENSOR = "3"
 
 MQTT_TOPIC_VALUE = "VALUE"
-MQTT_TOPIC_DATE_AND_TIME = "DATE_AND_TIME"
+MQTT_TOPIC_DATE = "DATE"
+MQTT_TOPIC_TIME = "TIME"
 
 MQTT_TOPIC_LATITUDE = "LATITUDE"
 MQTT_MSG_LADKABANG_LATITUDE = "13.7299"
@@ -91,8 +92,12 @@ def connect_to_mqtt_broker():
   client.connect(MQTT_BROKER_URL,port=MQTT_BROKER_PORT,keepalive=60)
   print("CONNECT_TO_BROKER_SUCCESS")
 
+def setLocalDate():
+  localdate_str = time.strftime("%d/%m/%Y", localtime())
+  return str(localdate_str)
+
 def setLocalTime():
-  localtime_str = time.strftime("%d/%m/%Y %H:%M:%S", localtime())
+  localtime_str = time.strftime("%H:%M:%S", localtime())
   return str(localtime_str)
 
 def get_water_level():
@@ -107,7 +112,8 @@ def create_Json_file_node_1():
   node_1 = {}
   node_1[MQTT_TOPIC_ID_OF_SENSOR] = MQTT_MSG_LARDKABANG_ID_OF_SENSOR
   node_1[MQTT_TOPIC_VALUE] = get_water_level()
-  node_1[MQTT_TOPIC_DATE_AND_TIME] = setLocalTime()
+  node_1[MQTT_TOPIC_DATE] = setLocalDate()
+  node_1[MQTT_TOPIC_TIME] = setLocalTime()
   node_1[MQTT_TOPIC_LATITUDE] = MQTT_MSG_LADKABANG_LATITUDE
   node_1[MQTT_TOPIC_LONGTITUDE] = MQTT_MSG_LARKRABANG_LONGTITUDE
   node_1[MQTT_TOPIC_LOCATION] = MQTT_MSG_LADKRABANG_LOCATION
@@ -119,7 +125,8 @@ def create_Json_file_node_2():
   node_2 = {}
   node_2[MQTT_TOPIC_ID_OF_SENSOR] = MQTT_MSG_BANGKAPI_ID_OF_SENSOR
   node_2[MQTT_TOPIC_VALUE] = generate_water_level()
-  node_2[MQTT_TOPIC_DATE_AND_TIME] = setLocalTime()
+  node_2[MQTT_TOPIC_DATE] = setLocalDate()
+  node_2[MQTT_TOPIC_TIME] = setLocalTime()
   node_2[MQTT_TOPIC_LATITUDE] = MQTT_MSG_BANGKAPI_LATITUDE
   node_2[MQTT_TOPIC_LONGTITUDE] = MQTT_MSG_BANGKAPI_LONGTITUDE
   node_2[MQTT_TOPIC_LOCATION] = MQTT_MSG_BANGKAPI_LOCATION
@@ -131,7 +138,8 @@ def create_Json_file_node_3():
   node_3 = {}
   node_3[MQTT_TOPIC_ID_OF_SENSOR] = MQTT_MSG_LADPRAO_ID_OF_SENSOR
   node_3[MQTT_TOPIC_VALUE] = generate_water_level()
-  node_3[MQTT_TOPIC_DATE_AND_TIME] = setLocalTime()
+  node_3[MQTT_TOPIC_DATE] = setLocalDate()
+  node_3[MQTT_TOPIC_TIME] = setLocalTime()
   node_3[MQTT_TOPIC_LATITUDE] = MQTT_MSG_LADPRAO_LATITUDE
   node_3[MQTT_TOPIC_LONGTITUDE] = MQTT_MSG_LADPRAO_LONGTITUDE
   node_3[MQTT_TOPIC_LOCATION] = MQTT_MSG_LADPRAO_LOCATION
